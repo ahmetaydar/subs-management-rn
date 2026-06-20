@@ -8,6 +8,7 @@ const SubscriptionDetails    = () => {
     <View>
       <Text>SubscriptionDetails {id}</Text>
       <Link href="/(tabs)/subscriptions" className="mt-4 rounded bg-primary text-white px-4 py-2">Back to Subscriptions</Link>
+      <Text className="flex-1 items-center justify-center bg-background">test</Text>
     </View> 
   )
 }
