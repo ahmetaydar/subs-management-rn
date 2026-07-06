@@ -1,5 +1,8 @@
+import SubscriptionCard from "@/components/SubscriptionCard";
+import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
 import {
   HOME_BALANCE,
+  HOME_SUBSCRIPTIONS,
   HOME_USER,
   UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
@@ -9,12 +12,10 @@ import "@/global.css";
 import { formatCurrency } from "@/lib/utils";
 import dayjs from "dayjs";
 import { styled } from "nativewind";
+import { useState } from "react";
 import { FlatList, Image, Text, View } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import ListHeading from "../../components/ListHeading";
-import UpcomingSubscriptionCard from "../../components/UpcomingSubscriptionCard";
-import { useState } from "react";
-import SubscriptionCard from "@/components/SubscriptionCard";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -47,22 +48,45 @@ export default function App() {
               </View>
             </View>
 
-            </>
-      <View>
-        <ListHeading title="Upcoming" />
-        <FlatList
-          data={UPCOMING_SUBSCRIPTIONS}
-          renderItem={({ item }) => <UpcomingSubscriptionCard {...item} />}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          ListEmptyComponent={
-            <Text className="home-empty">No upcoming renewals</Text>
-          }
-        />
-      </View>
-      </>
-    </FlatList>
-  </SafeAreaView>
+            <View className="mb-5">
+              <ListHeading title="Upcoming" />
+              <FlatList
+                data={UPCOMING_SUBSCRIPTIONS}
+                renderItem={({ item }) => (
+                  <UpcomingSubscriptionCard {...item} />
+                )}
+                horizontal
+                keyExtractor={(item) => item.id.toString()}
+                showsHorizontalScrollIndicator={false}
+                ListEmptyComponent={
+                  <Text className="home-empty">No upcoming subscriptions</Text>
+                }
+              />
+            </View>
+            <ListHeading title="All Subscriptions" />
+          </>
+        )}
+        data={HOME_SUBSCRIPTIONS}
+        keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={
+          <Text className="home-empty">No subscriptions</Text>
+        }
+        renderItem={({ item }) => (
+          <SubscriptionCard
+            {...item}
+            expanded={expandedSubscriptionId === item.id}
+            onPress={() => {
+              setExpandedSubscriptionId((prev) =>
+                prev === item.id ? null : item.id
+              );
+            }}
+          />
+        )}
+        extraData={expandedSubscriptionId}
+        ItemSeparatorComponent={() => <View className="h-4" />}
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName="pb-30"
+      />
+    </SafeAreaView>
   );
 }
