@@ -1,5 +1,6 @@
 import AuthButton from "@/components/auth/AuthButton";
 import { colors } from "@/constants/theme";
+import { posthog } from "@/lib/posthog";
 import { useAuth, useUser } from "@clerk/expo";
 import { useRouter } from "expo-router";
 import { styled } from "nativewind";
@@ -26,6 +27,8 @@ const Settings = () => {
     setSigningOut(true);
     setSignOutError(null);
     try {
+      posthog.capture("user_signed_out");
+      posthog.reset();
       await signOut();
       router.replace("/(auth)/sign-in");
     } catch {

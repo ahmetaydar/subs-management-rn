@@ -9,6 +9,7 @@ import {
   validateEmail,
   validatePassword,
 } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
 import { useSignIn } from "@clerk/expo";
 import { Link, type Href, useRouter } from "expo-router";
 import { useState } from "react";
@@ -39,7 +40,7 @@ export default function SignInScreen() {
       navigate: ({ session, decorateUrl }) => {
         if (session?.currentTask) {
           setFormError(
-            "Additional account setup is required before continuing.",
+            "Additional account setup is required before continuing."
           );
           return;
         }
@@ -71,24 +72,29 @@ export default function SignInScreen() {
         setFormError(
           error.longMessage ||
             error.message ||
-            "Unable to sign in. Check your details and try again.",
+            "Unable to sign in. Check your details and try again."
         );
         return;
       }
 
       if (signIn.status === "complete") {
+        posthog.identify(emailAddress.trim(), {
+          $set: { email: emailAddress.trim() },
+          $set_once: { first_sign_in_date: new Date().toISOString() },
+        });
+        posthog.capture("user_signed_in", { method: "password" });
         await finalizeSignIn();
         return;
       }
 
       if (signIn.status === "needs_client_trust") {
         const emailCodeFactor = signIn.supportedSecondFactors.find(
-          (factor) => factor.strategy === "email_code",
+          (factor) => factor.strategy === "email_code"
         );
 
         if (!emailCodeFactor) {
           setFormError(
-            "Email verification is not available for this sign-in. Please try again.",
+            "Email verification is not available for this sign-in. Please try again."
           );
           await signIn.reset();
           return;
@@ -99,7 +105,7 @@ export default function SignInScreen() {
           setFormError(
             sendError.longMessage ||
               sendError.message ||
-              "Could not send the verification code. Please try again.",
+              "Could not send the verification code. Please try again."
           );
           await signIn.reset();
           return;
@@ -109,9 +115,7 @@ export default function SignInScreen() {
       }
 
       if (signIn.status === "needs_second_factor") {
-        setFormError(
-          "Two-factor authentication is required for this account.",
-        );
+        setFormError("Two-factor authentication is required for this account.");
         return;
       }
 
@@ -137,12 +141,16 @@ export default function SignInScreen() {
         setFormError(
           error.longMessage ||
             error.message ||
-            "Invalid verification code. Please try again.",
+            "Invalid verification code. Please try again."
         );
         return;
       }
 
       if (signIn.status === "complete") {
+        posthog.identify(emailAddress.trim(), {
+          $set: { email: emailAddress.trim() },
+        });
+        posthog.capture("user_signed_in", { method: "password_mfa" });
         await finalizeSignIn();
         return;
       }
@@ -160,7 +168,7 @@ export default function SignInScreen() {
       const { error } = await signIn.mfa.sendEmailCode();
       if (error) {
         setFormError(
-          error.longMessage || error.message || "Could not resend the code.",
+          error.longMessage || error.message || "Could not resend the code."
         );
       }
     } finally {
