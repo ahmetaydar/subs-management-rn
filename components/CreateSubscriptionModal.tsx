@@ -27,6 +27,8 @@ const CATEGORIES = [
   "Other",
 ] as const;
 
+import {posthog} from '@/lib/posthog'
+
 type Category = (typeof CATEGORIES)[number];
 
 const CATEGORY_COLORS: Record<Category, string> = {
@@ -100,6 +102,14 @@ export default function CreateSubscriptionModal({
     };
 
     onCreate(subscription);
+
+    posthog.capture("subscription_created", {
+      name: subscription.name,
+      price: subscription.price,
+      frequency,
+      category,
+    });
+
     resetForm();
     onClose();
   };

@@ -55,7 +55,7 @@ export default function RootLayout() {
   return (
     <PostHogProvider
       client={posthog}
-      debug={__DEV__}
+      debug={false}
       autocapture={{
         captureScreens: false,
         captureTouches: true,
