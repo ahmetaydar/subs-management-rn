@@ -1,9 +1,14 @@
+import { posthog } from "@/lib/posthog";
 import { Link, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View } from "react-native";
 
 const SubscriptionDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  useEffect(() => {
+    posthog.capture("subscription_detail_viewed", { subscription_id: id });
+  }, [id]);
 
   return (
     <View className="flex-1 bg-background p-5">

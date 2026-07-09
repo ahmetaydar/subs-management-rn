@@ -11,6 +11,7 @@ import {
   validateName,
   validatePassword,
 } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
 import { useAuth, useSignUp } from "@clerk/expo";
 import { Link, type Href, useRouter } from "expo-router";
 import { useState } from "react";
@@ -52,7 +53,7 @@ export default function SignUpScreen() {
       navigate: ({ session, decorateUrl }) => {
         if (session?.currentTask) {
           setSessionTaskError(
-            "Additional account setup is required before continuing.",
+            "Additional account setup is required before continuing."
           );
           return;
         }
@@ -99,12 +100,20 @@ export default function SignUpScreen() {
         setFormError(
           error.longMessage ||
             error.message ||
-            "Unable to create your account. Please try again.",
+            "Unable to create your account. Please try again."
         );
         return;
       }
 
       if (signUp.status === "complete") {
+        posthog.identify(emailAddress.trim(), {
+          $set: {
+            email: emailAddress.trim(),
+            name: [firstName.trim(), lastName.trim()].filter(Boolean).join(" "),
+          },
+          $set_once: { sign_up_date: new Date().toISOString() },
+        });
+        posthog.capture("user_signed_up", { method: "password" });
         await finalizeSignUp();
         return;
       }
@@ -114,7 +123,7 @@ export default function SignUpScreen() {
         setFormError(
           sendError.longMessage ||
             sendError.message ||
-            "Account created, but we could not send a verification code.",
+            "Account created, but we could not send a verification code."
         );
       }
     } finally {
@@ -139,12 +148,20 @@ export default function SignUpScreen() {
         setFormError(
           error.longMessage ||
             error.message ||
-            "Invalid verification code. Please try again.",
+            "Invalid verification code. Please try again."
         );
         return;
       }
 
       if (signUp.status === "complete") {
+        posthog.identify(emailAddress.trim(), {
+          $set: {
+            email: emailAddress.trim(),
+            name: [firstName.trim(), lastName.trim()].filter(Boolean).join(" "),
+          },
+          $set_once: { sign_up_date: new Date().toISOString() },
+        });
+        posthog.capture("user_signed_up", { method: "password" });
         await finalizeSignUp();
         return;
       }
@@ -162,7 +179,7 @@ export default function SignUpScreen() {
       const { error } = await signUp.verifications.sendEmailCode();
       if (error) {
         setFormError(
-          error.longMessage || error.message || "Could not resend the code.",
+          error.longMessage || error.message || "Could not resend the code."
         );
       }
     } finally {
@@ -279,8 +296,7 @@ export default function SignUpScreen() {
           }
         }}
         error={
-          localErrors.firstName ||
-          getFieldErrorMessage(errors.fields.firstName)
+          localErrors.firstName || getFieldErrorMessage(errors.fields.firstName)
         }
         placeholder="Enter your first name"
         autoCapitalize="words"
@@ -314,8 +330,7 @@ export default function SignUpScreen() {
           }
         }}
         error={
-          localErrors.email ||
-          getFieldErrorMessage(errors.fields.emailAddress)
+          localErrors.email || getFieldErrorMessage(errors.fields.emailAddress)
         }
         placeholder="Enter your email"
         autoCapitalize="none"

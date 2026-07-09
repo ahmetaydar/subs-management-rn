@@ -10,6 +10,7 @@ import {
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import "@/global.css";
+import { posthog } from "@/lib/posthog";
 import { formatCurrency } from "@/lib/utils";
 import { useUser } from "@clerk/expo";
 import dayjs from "dayjs";
@@ -26,10 +27,7 @@ export default function App() {
     string | null
   >(null);
 
-  const displayName =
-    user?.fullName ||
-    user?.firstName ||
-    HOME_USER.name;
+  const displayName = user?.fullName || user?.firstName || HOME_USER.name;
 
   return (
     <SafeAreaView className="flex-1 bg-background p-5">
@@ -40,9 +38,7 @@ export default function App() {
               <View className="home-user">
                 <Image
                   source={
-                    user?.imageUrl
-                      ? { uri: user.imageUrl }
-                      : images.avatar
+                    user?.imageUrl ? { uri: user.imageUrl } : images.avatar
                   }
                   className="home-avatar"
                 />
@@ -91,9 +87,15 @@ export default function App() {
             {...item}
             expanded={expandedSubscriptionId === item.id}
             onPress={() => {
+              const isExpanding = expandedSubscriptionId !== item.id;
               setExpandedSubscriptionId((prev) =>
                 prev === item.id ? null : item.id
               );
+              if (isExpanding) {
+                posthog.capture("subscription_expanded", {
+                  subscription_id: item.id,
+                });
+              }
             }}
           />
         )}
