@@ -43,6 +43,59 @@ export const UPCOMING_SUBSCRIPTIONS: UpcomingSubscription[] = [
   },
 ];
 
+export const INSIGHTS_CHART: InsightBar[] = [
+  { day: "Mon", value: 22 },
+  { day: "Tue", value: 18 },
+  { day: "Wed", value: 28 },
+  { day: "Thr", value: 40, highlighted: true },
+  { day: "Fri", value: 32 },
+  { day: "Sat", value: 12 },
+  { day: "Sun", value: 8 },
+];
+
+export const INSIGHTS_CHART_MAX = 45;
+export const INSIGHTS_CHART_Y_LABELS = [45, 35, 25, 5, 0];
+
+export const INSIGHTS_EXPENSES = {
+  label: "Expenses",
+  period: "March 2026",
+  amount: -424.63,
+  changePercent: 12,
+};
+
+export const INSIGHTS_HISTORY: InsightHistoryItem[] = [
+  {
+    id: "claude",
+    icon: icons.claude,
+    name: "Claude",
+    dateLabel: "June 25, 12:00",
+    price: 9.84,
+    currency: "USD",
+    billing: "per month",
+    color: "#f5c542",
+  },
+  {
+    id: "canva",
+    icon: icons.canva,
+    name: "Canva",
+    dateLabel: "June 30, 16:00",
+    price: 43.89,
+    currency: "USD",
+    billing: "per month",
+    color: "#8fd1bd",
+  },
+  {
+    id: "medium",
+    icon: icons.medium,
+    name: "Medium",
+    dateLabel: "July 02, 09:30",
+    price: 15.0,
+    currency: "USD",
+    billing: "per month",
+    color: "#e8e4d9",
+  },
+];
+
 export const HOME_SUBSCRIPTIONS: Subscription[] = [
   {
     id: "adobe-creative-cloud",

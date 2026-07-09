@@ -51,6 +51,31 @@ declare global {
     interface ListHeadingProps {
         title: string;
     }
+
+    interface InsightBar {
+        day: string;
+        value: number;
+        highlighted?: boolean;
+    }
+
+    interface InsightHistoryItem {
+        id: string;
+        icon: ImageSourcePropType;
+        name: string;
+        dateLabel: string;
+        price: number;
+        currency?: string;
+        billing: string;
+        color: string;
+    }
+
+    interface WeeklyBarChartProps {
+        data: InsightBar[];
+        maxValue: number;
+        yLabels: number[];
+    }
+
+    interface InsightHistoryCardProps extends Omit<InsightHistoryItem, "id"> {}
 }
 
 export { };
