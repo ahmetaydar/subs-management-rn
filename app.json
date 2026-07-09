@@ -1,17 +1,22 @@
 {
   "expo": {
-    "name": "subscription-management-rn",
-    "slug": "subscription-management-rn",
+    "name": "Aydarcurrly",
+    "slug": "aydarcurrly",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "subscriptionmanagementrn",
+    "icon": "./assets/icons/logo.png",
+    "scheme": "aydarcurrly",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.aydarcurrly.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.aydarcurrly.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -30,7 +35,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash-pattern.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -53,11 +58,20 @@
         }
       ],
       "@clerk/expo",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "posthogHost": "https://eu.i.posthog.com",
+      "router": {},
+      "eas": {
+        "projectId": "dc91c3f8-a287-4474-a79d-1f4b32ed9981"
+      }
+    },
+    "owner": "aydarahmet"
   }
 }
