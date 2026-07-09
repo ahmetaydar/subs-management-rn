@@ -85,9 +85,26 @@ export default function SignInScreen() {
         const emailCodeFactor = signIn.supportedSecondFactors.find(
           (factor) => factor.strategy === "email_code",
         );
-        if (emailCodeFactor) {
-          await signIn.mfa.sendEmailCode();
+
+        if (!emailCodeFactor) {
+          setFormError(
+            "Email verification is not available for this sign-in. Please try again.",
+          );
+          await signIn.reset();
+          return;
         }
+
+        const { error: sendError } = await signIn.mfa.sendEmailCode();
+        if (sendError) {
+          setFormError(
+            sendError.longMessage ||
+              sendError.message ||
+              "Could not send the verification code. Please try again.",
+          );
+          await signIn.reset();
+          return;
+        }
+
         return;
       }
 

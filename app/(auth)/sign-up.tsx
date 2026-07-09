@@ -38,6 +38,7 @@ export default function SignUpScreen() {
   const [code, setCode] = useState("");
   const [localErrors, setLocalErrors] = useState<LocalErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [sessionTaskError, setSessionTaskError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const isFetching = fetchStatus === "fetching" || submitting;
@@ -50,12 +51,13 @@ export default function SignUpScreen() {
     await signUp.finalize({
       navigate: ({ session, decorateUrl }) => {
         if (session?.currentTask) {
-          setFormError(
+          setSessionTaskError(
             "Additional account setup is required before continuing.",
           );
           return;
         }
 
+        setSessionTaskError(null);
         const url = decorateUrl("/");
         router.replace(url as Href);
       },
@@ -72,6 +74,7 @@ export default function SignUpScreen() {
     };
     setLocalErrors(nextErrors);
     setFormError(null);
+    setSessionTaskError(null);
 
     if (
       nextErrors.firstName ||
@@ -123,6 +126,7 @@ export default function SignUpScreen() {
     const codeError = validateCode(code);
     setLocalErrors({ code: codeError });
     setFormError(null);
+    setSessionTaskError(null);
     if (codeError) return;
 
     setSubmitting(true);
@@ -170,8 +174,26 @@ export default function SignUpScreen() {
     setCode("");
     setLocalErrors({});
     setFormError(null);
+    setSessionTaskError(null);
     await signUp.reset();
   };
+
+  if (sessionTaskError) {
+    return (
+      <AuthScreen
+        title="Almost there"
+        subtitle="Your account was created, but one more step is required before you can continue."
+        bannerError={sessionTaskError}
+      >
+        <AuthButton
+          label="Start over"
+          variant="secondary"
+          onPress={handleStartOver}
+          disabled={isFetching}
+        />
+      </AuthScreen>
+    );
+  }
 
   if (signUp.status === "complete" || isSignedIn) {
     return null;

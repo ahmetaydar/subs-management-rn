@@ -14,6 +14,7 @@ const Settings = () => {
   const { user } = useUser();
   const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
 
   const displayName =
     user?.fullName ||
@@ -23,9 +24,12 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     setSigningOut(true);
+    setSignOutError(null);
     try {
       await signOut();
       router.replace("/(auth)/sign-in");
+    } catch {
+      setSignOutError("Could not sign out. Please try again.");
     } finally {
       setSigningOut(false);
     }
@@ -48,6 +52,12 @@ const Settings = () => {
         {email ? (
           <Text className="mt-1 text-sm font-sans-medium text-muted-foreground">
             {email}
+          </Text>
+        ) : null}
+
+        {signOutError ? (
+          <Text className="mt-4 text-sm font-sans-medium text-destructive">
+            {signOutError}
           </Text>
         ) : null}
 
